@@ -13,6 +13,16 @@ constexpr const Impl& crtp(const Base* base) noexcept
     return *static_cast<const Impl*>(base);
 }
 
+template<typename T>
+constexpr T* launder__(T* p) noexcept
+{
+#if __cplusplus >= 201703L
+        return std::launder(p);
+#else
+        return p;
+#endif
+}
+
 template<
     typename Impl, typename T, 
     bool = std::is_move_constructible<T>::value,
@@ -115,20 +125,12 @@ public:
 
     T& get() noexcept
     {
-#if __cplusplus >= 201703L
-        return *std::launder(reinterpret_cast<T*>(buf));
-#else
-        return *(reinterpret_cast<T*>(buf));
-#endif
+        return *launder__(reinterpret_cast<T*>(buf));
     }
 
     const T& get() const noexcept
     {
-#if __cplusplus >= 201703L
-        return *std::launder(reinterpret_cast<const T*>(buf));
-#else
-        return *(reinterpret_cast<const T*>(buf));
-#endif
+        return *launder__(reinterpret_cast<const T*>(buf));
     }
 };
 
