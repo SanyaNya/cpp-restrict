@@ -8,7 +8,7 @@ inline Impl& crtp(Base* base) noexcept
 }
 
 template<typename Impl, typename Base>
-inline Impl& crtp(const Base* base) noexcept
+inline const Impl& crtp(const Base* base) noexcept
 {
     return *static_cast<const Impl*>(base);
 }
