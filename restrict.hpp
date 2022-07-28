@@ -95,6 +95,7 @@ struct raw_storage_impl :
     raw_storage_move_to_impl<Impl, T>
 {
     using raw_storage_ctor_impl<Impl, T>::raw_storage_ctor_impl;
+    using raw_storage_move_to_impl<Impl, T>::move_to;
 };
 
 template<typename Impl, typename T>
