@@ -1,6 +1,18 @@
 namespace detail
 {
 
+template<typename Impl, typename Base>
+inline Impl& crtp(Base* base) noexcept
+{
+    return *static_cast<Impl*>(base);
+}
+
+template<typename Impl, typename Base>
+inline Impl& crtp(const Base* base) noexcept
+{
+    return *static_cast<const Impl*>(base);
+}
+
 template<
     typename Impl, typename T, 
     bool = std::is_move_constructible<T>::value,
@@ -19,7 +31,7 @@ struct raw_storage_ctor_impl<Impl, T, true, copy_construct>
     raw_storage_ctor_impl(T& t)
         noexcept(std::is_nothrow_move_constructible<T>::value)
     {
-        new(static_cast<Impl*>(this)->data()) T(std::move(t));
+        new(crtp<Impl>(this).data()) T(std::move(t));
     }
 };
 
@@ -29,7 +41,7 @@ struct raw_storage_ctor_impl<Impl, T, false, true>
     raw_storage_ctor_impl(const T& t)
         noexcept(std::is_nothrow_copy_constructible<T>::value)
     {
-        new(static_cast<Impl*>(this)->data()) T(t);
+        new(crtp<Impl>(this).data()) T(t);
     }
 };
 
@@ -51,7 +63,7 @@ struct raw_storage_move_to_impl<Impl, T, true, copy_assign>
     void move_to(T& dest) 
         noexcept(std::is_nothrow_move_assignable<T>::value)
     {
-        dest = std::move(static_cast<Impl*>(this)->get());
+        dest = std::move(crtp<Impl>(this).get());
     }
 };
 
@@ -61,7 +73,7 @@ struct raw_storage_move_to_impl<Impl, T, false, true>
     void move_to(T& dest) const
         noexcept(std::is_nothrow_copy_assignable<T>::value)
     {
-        dest = static_cast<const Impl*>(this)->get();
+        dest = crtp<Impl>(this).get();
     }
 };
 
@@ -80,12 +92,12 @@ struct raw_storage_impl<Impl, T, true>
 {
     raw_storage_impl(T& t) noexcept
     {
-        std::memcpy(static_cast<Impl*>(this)->data(), &t, sizeof(T));
+        std::memcpy(crtp<Impl>(this).data(), &t, sizeof(T));
     }
 
     void move_to(T& dest) const noexcept
     {
-        std::memcpy(&dest, &static_cast<const Impl*>(this)->get(), sizeof(T));
+        std::memcpy(&dest, &crtp<Impl>(this).get(), sizeof(T));
     }
 };
 
