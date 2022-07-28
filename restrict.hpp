@@ -2,13 +2,13 @@ namespace detail
 {
 
 template<typename Impl, typename Base>
-inline Impl& crtp(Base* base) noexcept
+constexpr Impl& crtp(Base* base) noexcept
 {
     return *static_cast<Impl*>(base);
 }
 
 template<typename Impl, typename Base>
-inline const Impl& crtp(const Base* base) noexcept
+constexpr const Impl& crtp(const Base* base) noexcept
 {
     return *static_cast<const Impl*>(base);
 }
