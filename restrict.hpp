@@ -1,3 +1,6 @@
+namespace restrict
+{
+
 namespace detail
 {
 
@@ -116,17 +119,17 @@ public:
 } //namespace detail
 
 template<typename T>
-class Restrict
+class ref
 {
     detail::raw_storage<T> tmp;
     T& value;
 
 public:
-    explicit Restrict(T& val) 
+    explicit ref(T& val) 
         noexcept(noexcept(detail::raw_storage<T>(val))) : 
         tmp(val), value(val) {}
 
-    ~Restrict() 
+    ~ref() 
         noexcept(noexcept(tmp.move_to(value)))
     {
         tmp.move_to(value);
@@ -142,3 +145,5 @@ public:
         return tmp.get();
     }
 };
+
+} //namespace restrict
