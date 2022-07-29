@@ -87,13 +87,6 @@ struct raw_storage_move_to_impl<Impl, T, false, true>
     }
 };
 
-template<typename Impl, typename T>
-struct raw_storage_impl : 
-    
-{
-    
-};
-
 template<typename T>
 class raw_storage : 
     public raw_storage_ctor_impl<raw_storage<T>, T>,
