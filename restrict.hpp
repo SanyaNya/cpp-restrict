@@ -87,29 +87,13 @@ struct raw_storage_move_to_impl<Impl, T, false, true>
     }
 };
 
-template<
-    typename Impl, typename T, 
-    bool = std::is_trivially_copyable<T>::value>
+template<typename Impl, typename T>
 struct raw_storage_impl : 
     raw_storage_ctor_impl<Impl, T>,
     raw_storage_move_to_impl<Impl, T>
 {
     using raw_storage_ctor_impl<Impl, T>::raw_storage_ctor_impl;
     using raw_storage_move_to_impl<Impl, T>::move_to;
-};
-
-template<typename Impl, typename T>
-struct raw_storage_impl<Impl, T, true>
-{
-    raw_storage_impl(T& t) noexcept
-    {
-        std::memcpy(crtp<Impl>(this).data(), &t, sizeof(T));
-    }
-
-    void move_to(T& dest) const noexcept
-    {
-        std::memcpy(&dest, &crtp<Impl>(this).get(), sizeof(T));
-    }
 };
 
 template<typename T>
