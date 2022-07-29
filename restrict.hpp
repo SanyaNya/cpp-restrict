@@ -140,13 +140,13 @@ public:
 template<typename T>
 class Restrict
 {
-    T& value;
     detail::raw_storage<T> tmp;
+    T& value;
 
 public:
     explicit Restrict(T& val) 
         noexcept(noexcept(detail::raw_storage<T>(val))) : 
-        value(val), tmp(val) {}
+        tmp(val), value(val) {}
 
     ~Restrict() 
         noexcept(noexcept(tmp.move_to(value)))
