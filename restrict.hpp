@@ -89,20 +89,21 @@ struct raw_storage_move_to_impl<Impl, T, false, true>
 
 template<typename Impl, typename T>
 struct raw_storage_impl : 
-    raw_storage_ctor_impl<Impl, T>,
-    raw_storage_move_to_impl<Impl, T>
+    
 {
-    using raw_storage_ctor_impl<Impl, T>::raw_storage_ctor_impl;
-    using raw_storage_move_to_impl<Impl, T>::move_to;
+    
 };
 
 template<typename T>
-class raw_storage : public raw_storage_impl<raw_storage<T>, T>
+class raw_storage : 
+    public raw_storage_ctor_impl<raw_storage<T>, T>,
+    public raw_storage_move_to_impl<raw_storage<T>, T>
 {
     alignas(T) unsigned char buf[sizeof(T)];
 
 public:
-    using raw_storage_impl<raw_storage<T>, T>::raw_storage_impl;
+    using raw_storage_ctor_impl<raw_storage<T>, T>::raw_storage_ctor_impl;
+    using raw_storage_move_to_impl<raw_storage<T>, T>::move_to;
 
     decltype(buf)& data() noexcept { return buf; }
 
