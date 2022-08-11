@@ -65,21 +65,20 @@ struct raw_storage_ctor_impl<Impl, T, false, true>
 
 template<
     typename Impl, typename T,
-    bool = std::is_move_assignable<T>::value,
-    bool = std::is_copy_assignable<T>::value>
+    bool = std::is_nothrow_move_assignable<T>::value,
+    bool = std::is_nothrow_copy_assignable<T>::value>
 struct raw_storage_move_to_impl
 {
     static_assert(
-        std::is_move_assignable<T>::value ||
-        std::is_copy_assignable<T>::value,
-        "T must be move or copy assignable");
+        std::is_nothrow_move_assignable<T>::value ||
+        std::is_nothrow_copy_assignable<T>::value,
+        "T must be nothrow move or copy assignable");
 };
 
 template<typename Impl, typename T, bool copy_assign>
 struct raw_storage_move_to_impl<Impl, T, true, copy_assign>
 {
-    void move_to(T& dest) 
-        noexcept(std::is_nothrow_move_assignable<T>::value)
+    void move_to(T& dest) noexcept
     {
         dest = std::move(crtp<Impl>(this).get());
     }
@@ -88,8 +87,7 @@ struct raw_storage_move_to_impl<Impl, T, true, copy_assign>
 template<typename Impl, typename T>
 struct raw_storage_move_to_impl<Impl, T, false, true>
 {
-    void move_to(T& dest) const
-        noexcept(std::is_nothrow_copy_assignable<T>::value)
+    void move_to(T& dest) const noexcept
     {
         dest = crtp<Impl>(this).get();
     }
@@ -135,7 +133,6 @@ public:
         tmp(val), value(val) {}
 
     ~ref() 
-        noexcept(noexcept(tmp.move_to(value)))
     {
         tmp.move_to(value);
     }
