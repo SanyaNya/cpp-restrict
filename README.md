@@ -1,6 +1,6 @@
 This is experimental implementation of restrict keyword from C in standard c++.
 
-Look at example comparison: https://godbolt.org/z/84qzTW7sq
+Look at example comparison: https://godbolt.org/z/4P7onsdoq
 
 Requirements: C++11
 
