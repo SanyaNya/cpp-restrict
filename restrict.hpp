@@ -3,11 +3,20 @@
 #include <new>
 #include <utility>
 
+#ifdef RESTRICT_DEBUG
+#include <unordered_set>
+#include <stdexcept>
+#endif
+
 namespace restrict
 {
 
 namespace detail
 {
+
+#ifdef RESTRICT_DEBUG
+std::unordered_set<void*> used_ptrs;
+#endif
 
 template<typename Impl, typename Base>
 constexpr Impl& crtp(Base* base) noexcept
@@ -128,13 +137,24 @@ class ref
     T& value;
 
 public:
-    explicit ref(T& val) 
+    ref(T& val) 
         noexcept(noexcept(detail::raw_storage<T>(val))) : 
-        tmp(val), value(val) {}
+        tmp(val), value(val)
+    {
+#ifdef RESTRICT_DEBUG
+        if(detail::used_ptrs.count(&value) == 0)
+            detail::used_ptrs.insert(&value);
+        else throw std::runtime_error("Two equal restrict pointers detected");
+#endif
+    }
 
     ~ref() 
     {
         tmp.move_to(value);
+
+#ifdef RESTRICT_DEBUG
+        detail::used_ptrs.erase(&value);
+#endif
     }
 
     T& get() noexcept
