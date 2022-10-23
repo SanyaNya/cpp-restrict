@@ -1,5 +1,5 @@
 #include <vector>
-#include "restrict.hpp"
+#include "../restrict.hpp"
 
 void assign_vector_front_no_restrict(
         std::vector<int>& x, std::vector<int>& y, std::vector<int>& z)
